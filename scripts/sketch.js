@@ -43,8 +43,8 @@ const sketch = (p) => {
       },
     },
     ml5: {
-      lipsCloseThreshold: 2,
-      lipsOpenThreshold: 4,
+      lipsCloseThreshold: 4,
+      lipsOpenThreshold: 8,
       smoothness: 0.75,
       // isDebugging: true,
       facemesh: {
