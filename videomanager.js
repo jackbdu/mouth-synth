@@ -129,8 +129,11 @@ const videoManager = {
         }
       }
     }
+    p.push();
+    p.rectMode(p.CORNER);
     p.fill(options.overlayColor);
     p.rect(0, 0, p.width, p.height);
+    p.pop();
   },
 
   generateFlowerVertices: function (numPeriods, numVertices, amp) {
