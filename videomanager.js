@@ -2,7 +2,6 @@ const videoManager = {
   capture: undefined,
   captureGraphics: undefined,
   pixelationSourceGraphics: undefined,
-  pixelationDestGraphics: undefined,
   pixelationShortSideNum: undefined,
   loaded: undefined,
 
@@ -26,17 +25,14 @@ const videoManager = {
 
   display: function (options) {
     p.push();
-    p.translate(-this.pixelationDestGraphics.width / 2, -this.pixelationDestGraphics.height / 2);
-    this.imagePixelated(this.captureGraphics, this.pixelationSourceGraphics, this.pixelationDestGraphics, options);
+    p.translate(-p.width / 2, -p.height / 2);
+    this.imagePixelated(this.captureGraphics, this.pixelationSourceGraphics, options);
     p.pop();
   },
 
   updateDimensions: function (canvasWidth, canvasHeight, options) {
-    // this.captureGraphics ? this.captureGraphics.resizeCanvas(canvasWidth, canvasHeight) : (this.captureGraphics = p.createGraphics(canvasWidth, canvasHeight));
     if (this.captureGraphics === undefined) this.captureGraphics = p.createGraphics(this.width, this.height);
     this.captureGraphics.pixelDensity(1);
-
-    this.pixelationDestGraphics ? this.pixelationDestGraphics.resizeCanvas(canvasWidth, canvasHeight) : (this.pixelationDestGraphics = p.createGraphics(canvasWidth, canvasHeight));
 
     let pixelationRowsNum;
     let pixelationColsNum;
@@ -52,7 +48,7 @@ const videoManager = {
   },
 
   // draw image as pixelated image (use smaller graphics, this cause blurry edges)
-  imagePixelated: function (sourceImg, tempPixelatedGraphics, destGraphics, options = {}) {
+  imagePixelated: function (sourceImg, tempPixelatedGraphics, options = {}) {
     // todo: this might be intialized in setup so it does not recreate new graphics every frame
     const rows = tempPixelatedGraphics.height;
     const cols = tempPixelatedGraphics.width;
@@ -62,9 +58,9 @@ const videoManager = {
     tempPixelatedGraphics.loadPixels();
     tempPixelatedGraphics.pop();
 
-    const colWidth = destGraphics.width / cols;
-    const rowHeight = destGraphics.height / rows;
-    destGraphics.background(options.backgroundColor);
+    const colWidth = p.width / cols;
+    const rowHeight = p.height / rows;
+    p.background(options.backgroundColor);
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows; r++) {
         const x = c * colWidth + colWidth / 2;
@@ -75,22 +71,22 @@ const videoManager = {
         const valueBlue = tempPixelatedGraphics.pixels[index + 2];
         const valueAlpha = tempPixelatedGraphics.pixels[index + 3];
         const colorPixel = p.color(valueRed, valueGreen, valueBlue, valueAlpha);
-        destGraphics.noStroke();
-        destGraphics.fill(colorPixel);
+        p.noStroke();
+        p.fill(colorPixel);
         // ellipses
         if (options.pixelationStyle === 1) {
-          destGraphics.ellipseMode(p.CENTER);
-          destGraphics.ellipse(x, y, p.ceil(colWidth), p.ceil(rowHeight));
+          p.ellipseMode(p.CENTER);
+          p.ellipse(x, y, p.ceil(colWidth), p.ceil(rowHeight));
           // ellipses in varied sizes
         } else if (options.pixelationStyle === 2) {
           const factorSize = p.lightness(colorPixel) / colorPixel.maxes.hsl[2];
-          destGraphics.ellipseMode(p.CENTER);
-          destGraphics.ellipse(x, y, p.ceil(colWidth * factorSize), p.ceil(rowHeight) * factorSize);
+          p.ellipseMode(p.CENTER);
+          p.ellipse(x, y, p.ceil(colWidth * factorSize), p.ceil(rowHeight) * factorSize);
           // rectangles with varied corners
         } else if (options.pixelationStyle === 3) {
           const factorCorner = p.lightness(colorPixel) / colorPixel.maxes.hsl[2];
-          destGraphics.rectMode(p.CENTER);
-          destGraphics.rect(x, y, p.ceil(colWidth), p.ceil(rowHeight), (factorCorner * p.min(colWidth, rowHeight)) / 2);
+          p.rectMode(p.CENTER);
+          p.rect(x, y, p.ceil(colWidth), p.ceil(rowHeight), (factorCorner * p.min(colWidth, rowHeight)) / 2);
           // rectangles
         } else if (options.pixelationStyle === 4) {
           // customization
@@ -102,14 +98,14 @@ const videoManager = {
           const factorFeatures = p.lightness(colorPixel) / colorPixel.maxes.hsl[2];
           const numFeatures = p.floor(numFeaturesMax * factorFeatures);
           const vertices = this.generateFlowerVertices(numFeatures, numVertices, amp);
-          destGraphics.push();
-          destGraphics.translate(x, y);
-          destGraphics.beginShape();
+          p.push();
+          p.translate(x, y);
+          p.beginShape();
           for (let vtx of vertices) {
-            destGraphics.vertex(vtx.x * colWidth, vtx.y * rowHeight);
+            p.vertex(vtx.x * colWidth, vtx.y * rowHeight);
           }
-          destGraphics.endShape();
-          destGraphics.pop();
+          p.endShape();
+          p.pop();
         } else if (options.pixelationStyle === 5) {
           // customization
           const numFeaturesMax = options.numFeaturesMax ?? 16;
@@ -119,24 +115,22 @@ const videoManager = {
           const factorFeatures = p.lightness(colorPixel) / colorPixel.maxes.hsl[2];
           const numFeatures = p.floor(numFeaturesMax * factorFeatures);
           const vertices = this.generateStarVertices(numFeatures, numVertices, amp);
-          destGraphics.push();
-          destGraphics.translate(x, y);
-          destGraphics.beginShape();
+          p.push();
+          p.translate(x, y);
+          p.beginShape();
           for (let vtx of vertices) {
-            destGraphics.vertex(vtx.x * colWidth, vtx.y * rowHeight);
+            p.vertex(vtx.x * colWidth, vtx.y * rowHeight);
           }
-          destGraphics.endShape();
-          destGraphics.pop();
+          p.endShape();
+          p.pop();
         } else {
-          destGraphics.rectMode(p.CENTER);
-          destGraphics.rect(x, y, p.ceil(colWidth), p.ceil(rowHeight));
+          p.rectMode(p.CENTER);
+          p.rect(x, y, p.ceil(colWidth), p.ceil(rowHeight));
         }
       }
     }
-    destGraphics.background(options.overlayColor);
-    p.image(destGraphics, 0, 0, destGraphics.width, destGraphics.height);
-
-    return destGraphics;
+    p.fill(options.overlayColor);
+    p.rect(0, 0, p.width, p.height);
   },
 
   generateFlowerVertices: function (numPeriods, numVertices, amp) {
