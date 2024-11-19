@@ -12,7 +12,7 @@ const uiManager = {
     this.messages.loading = options?.messages?.loading ?? "loading...";
     this.messages.welcome = options?.messages?.welcome ?? "welcome!";
     this.messages.running = options?.messages?.running ?? "";
-    this.textColor = options?.textColor ?? "255";
+    this.textColor = options?.textColor ?? "#fff";
     this.showFrameRate = options?.showFrameRate ?? false;
     // message won't be displayed because
     // 1. font is not loaded yet
@@ -30,9 +30,9 @@ const uiManager = {
     this.refSize = canvasShort;
   },
 
-  update: function (doneLoading, faceDetected) {
+  update: function (doneLoading, soundActivated, faceDetected) {
     if (doneLoading) this.message = this.messages.welcome;
-    if (faceDetected) this.message = this.messages.running;
+    if (faceDetected && soundActivated) this.message = this.messages.running;
   },
 
   display: function () {
@@ -46,7 +46,6 @@ const uiManager = {
     p.textSize(textSize);
     p.textAlign(p.CENTER, p.CENTER);
     p.fill(this.textColor);
-    p.noStroke();
     p.text(this.message, 0, 0);
     if (this.showFrameRate) {
       const frameRateTextSize = this.refSize / 16;

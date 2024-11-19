@@ -1,5 +1,4 @@
-/*
- * Main Sketch
+/* Main Sketch
  * Jack B. Du (github@jackbdu.com)
  * https://instagram.com/jackbdu/
  */
@@ -72,7 +71,7 @@ const sketch = (p) => {
       fontUrl: "assets/Ubuntu-Bold.ttf",
       messages: {
         loading: "Loading...".toUpperCase(),
-        welcome: "Move before webcam to start!".toUpperCase(),
+        welcome: "Click here to activate audio".toUpperCase(),
         running: "",
       },
       textColor: 255,
@@ -88,6 +87,7 @@ const sketch = (p) => {
   p.preload = () => {
     p.uiManager.preload(p.options.ui);
     p.ml5Manager.preload(p.options.ml5);
+    p.soundManager.preload(p.options.sound);
   };
 
   p.setup = () => {
@@ -113,12 +113,25 @@ const sketch = (p) => {
       p.soundManager.moveHarmonicity(p.ml5Manager.getLipsTipHeadingXPercentage());
       p.soundManager.changeModulationIndex(p.ml5Manager.getLipsTipHeadingYPercentage());
     };
+
+    if (p.specs.exhibit) {
+      p.soundManager.mousePressed();
+      p.noCursor();
+    }
+  };
+
+  p.mousePressed = () => {
+    p.soundManager.mousePressed();
+  };
+
+  p.touchStarted = () => {
+    p.soundManager.mousePressed();
   };
 
   p.beforeDraw = () => {
     if (p.beginCapture) p.beginCapture();
     p.videoManager.update(p.options.video);
-    p.uiManager.update(p.videoManager.loaded && p.ml5Manager.loaded, p.ml5Manager.faces.length > 0);
+    p.uiManager.update(p.videoManager.loaded && p.ml5Manager.loaded && p.soundManager.loaded, p.soundManager.started, p.ml5Manager.faces.length > 0);
     p.background(p.specs.colorBackground);
   };
 
@@ -159,3 +172,11 @@ const sketch = (p) => {
 };
 
 let p = new p5(sketch);
+
+// https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+if (params.width && parseInt(params.width) > 0) p.specs.outputWidth = params.width;
+if (params.height && parseInt(params.height) > 0) p.specs.outputHeight = params.height;
+if (params.exhibit) p.specs.exhibit = params.exhibit === "true";

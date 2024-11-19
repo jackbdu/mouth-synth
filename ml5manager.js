@@ -120,7 +120,8 @@ const ml5Manager = {
       p.push();
       const scaleX = (this.refSize / face.lipsBox.width) * options.lipsSize;
       const scaleY = (this.refSize / face.lipsBox.height) * options.lipsSize;
-      p.scale(scaleX > scaleY ? scaleY : scaleX);
+      const scale = scaleX > scaleY ? scaleY : scaleX;
+      p.scale(scale);
       p.translate(-face.lipsBox.x, -face.lipsBox.y);
       this.drawLips(face.lipsExterior, options);
       this.drawLips(face.lipsInterior, options);

@@ -11,6 +11,14 @@ const soundManager = {
   harmoncity: undefined,
   modulationAmount: undefined,
   modulationIndex: undefined,
+  loaded: false,
+  started: false,
+
+  preload: function (options) {
+    Tone.loaded().then(() => {
+      this.loaded = true;
+    });
+  },
 
   setup: function (options) {
     this.synth = new Tone.FMSynth(options.synth).toDestination();
@@ -28,6 +36,15 @@ const soundManager = {
     this.modulationAmount = options?.modulationAmount ?? 10;
   },
 
+  mousePressed: function () {
+    if (this.loaded === true && this.started !== true) {
+      Tone.start().then(() => {
+        this.started = true;
+        Tone.Transport.start();
+      });
+    }
+  },
+
   getElementAtPercentage: function (elements, percentage) {
     const constrainedPercentage = p.constrain(percentage, 0, 1);
     const index = Math.floor(constrainedPercentage * (this.notes.length - 1));
@@ -37,11 +54,11 @@ const soundManager = {
   triggerStart: function (percentage = 0.1) {
     this.startPercentage = percentage;
     const note = this.getElementAtPercentage(this.notes, percentage);
-    this.synth.triggerAttack(note);
+    if (this.started) this.synth.triggerAttack(note);
   },
 
   triggerEnd: function () {
-    this.synth.triggerRelease();
+    if (this.started) this.synth.triggerRelease();
   },
 
   changeVolume: function (percentage = 1) {
