@@ -8,7 +8,9 @@ const videoManager = {
 
   setup: function (canvasWidth, canvasHeight, options) {
     this.pixelationShortSideNum = options?.pixelationShortSideNum ?? 16;
-    this.updateDimensions(canvasWidth, canvasHeight);
+    this.width = options?.width ?? 640;
+    this.height = options?.height ?? 480;
+    this.updateDimensions(canvasWidth, canvasHeight, options);
     this.loaded = false;
     this.capture = p.createCapture(options.video, { flipped: options.flipped }, () => {
       this.loaded = true;
@@ -24,13 +26,14 @@ const videoManager = {
 
   display: function (options) {
     p.push();
-    p.translate(-this.captureGraphics.width / 2, -this.captureGraphics.height / 2);
+    p.translate(-this.pixelationDestGraphics.width / 2, -this.pixelationDestGraphics.height / 2);
     this.imagePixelated(this.captureGraphics, this.pixelationSourceGraphics, this.pixelationDestGraphics, options);
     p.pop();
   },
 
-  updateDimensions: function (canvasWidth, canvasHeight) {
-    this.captureGraphics ? this.captureGraphics.resizeCanvas(canvasWidth, canvasHeight) : (this.captureGraphics = p.createGraphics(canvasWidth, canvasHeight));
+  updateDimensions: function (canvasWidth, canvasHeight, options) {
+    // this.captureGraphics ? this.captureGraphics.resizeCanvas(canvasWidth, canvasHeight) : (this.captureGraphics = p.createGraphics(canvasWidth, canvasHeight));
+    if (this.captureGraphics === undefined) this.captureGraphics = p.createGraphics(this.width, this.height);
     this.captureGraphics.pixelDensity(1);
 
     this.pixelationDestGraphics ? this.pixelationDestGraphics.resizeCanvas(canvasWidth, canvasHeight) : (this.pixelationDestGraphics = p.createGraphics(canvasWidth, canvasHeight));
@@ -55,7 +58,7 @@ const videoManager = {
     const cols = tempPixelatedGraphics.width;
     tempPixelatedGraphics.push();
 
-    tempPixelatedGraphics.image(sourceImg, 0, 0, tempPixelatedGraphics.width, tempPixelatedGraphics.height, 0, 0, sourceImg.width, sourceImg.height);
+    tempPixelatedGraphics.image(sourceImg, 0, 0, tempPixelatedGraphics.width, tempPixelatedGraphics.height, 0, 0, sourceImg.width, sourceImg.height, p.COVER);
     tempPixelatedGraphics.loadPixels();
     tempPixelatedGraphics.pop();
 

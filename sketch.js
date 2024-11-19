@@ -59,6 +59,8 @@ const sketch = (p) => {
       placeholderFacePath: "assets/neutural-face.json",
     },
     video: {
+      width: 640,
+      height: 480,
       pixelationShortSideNum: 24,
       pixelationStyle: 2,
       flipped: true,
