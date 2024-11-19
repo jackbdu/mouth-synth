@@ -28,10 +28,10 @@ const soundManager = {
     this.modulationAmount = options?.modulationAmount ?? 10;
   },
 
-  getElementAtPercentage: function (array, percentage) {
+  getElementAtPercentage: function (elements, percentage) {
     const constrainedPercentage = p.constrain(percentage, 0, 1);
     const index = Math.floor(constrainedPercentage * (this.notes.length - 1));
-    return array[index];
+    return elements[index];
   },
 
   triggerStart: function (percentage = 0.1) {
