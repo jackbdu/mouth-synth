@@ -1,5 +1,7 @@
 # Mouth Synth
 
+![](assets/mouth-synth-demo-clip-360p@15fps.gif)
+
 Title: Mouth Synth
 
 Date: 2024
