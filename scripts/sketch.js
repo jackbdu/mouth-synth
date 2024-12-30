@@ -180,3 +180,11 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 if (params.width && parseInt(params.width) > 0) p.specs.outputWidth = params.width;
 if (params.height && parseInt(params.height) > 0) p.specs.outputHeight = params.height;
 if (params.exhibit) p.specs.exhibit = params.exhibit === "true";
+
+if (p.specs.exhibit) {
+  p.options.ui.messages = {
+    loading: "",
+    welcome: "",
+    running: "",
+  };
+}
