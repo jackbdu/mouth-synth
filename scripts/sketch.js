@@ -53,9 +53,12 @@ const sketch = (p) => {
         flipHorizontal: false,
       },
       strokeWeight: 0.01,
-      strokeColor: [255],
+      strokeColor: "#fff",
+      glowingStrokeWeight: 0.02,
+      glowingStrokeColor: "#fff",
       lipsSize: 0.75,
       placeholderFacePath: "assets/neutural-face.json",
+      blurriness: 0.005,
     },
     video: {
       width: 640,

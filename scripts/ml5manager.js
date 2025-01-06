@@ -116,6 +116,7 @@ const ml5Manager = {
   update: function () {},
 
   display: function (options) {
+    const blurriness = options?.blurriness ?? 0;
     for (let face of this.faces) {
       p.push();
       const scaleX = (this.refSize / face.lipsBox.width) * options.lipsSize;
@@ -123,6 +124,13 @@ const ml5Manager = {
       const scale = scaleX > scaleY ? scaleY : scaleX;
       p.scale(scale);
       p.translate(-face.lipsBox.x, -face.lipsBox.y);
+      if (blurriness > 0) {
+        const glowingStrokeWeight = options?.glowingStrokeWeight ?? 0.02;
+        const glowingStrokeColor = options?.glowingStrokeColor ?? options?.strokeColor ?? "#fff";
+        this.drawLips(face.lipsExterior, { ...options, strokeWeight: glowingStrokeWeight, strokeColor: glowingStrokeColor });
+        this.drawLips(face.lipsInterior, { ...options, strokeWeight: glowingStrokeWeight, strokeColor: glowingStrokeColor });
+        p.filter(p.BLUR, Math.round(blurriness * this.refSize));
+      }
       this.drawLips(face.lipsExterior, options);
       this.drawLips(face.lipsInterior, options);
       p.pop();
