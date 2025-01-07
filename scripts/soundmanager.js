@@ -11,6 +11,8 @@ const soundManager = {
   harmoncity: undefined,
   modulationAmount: undefined,
   modulationIndex: undefined,
+  waveformSmoothness: undefined,
+  smoothedWaveformValues: [],
   loaded: false,
   started: false,
 
@@ -21,7 +23,11 @@ const soundManager = {
   },
 
   setup: function (options) {
+    const waveformSize = options?.waveform?.size ?? 256;
+    this.waveformSmoothness = options?.waveform?.smoothness ?? 0.5;
+    this.waveform = new Tone.Waveform(waveformSize);
     this.synth = new Tone.FMSynth(options.synth).toDestination();
+    this.synth.connect(this.waveform);
     this.baseVolume = options?.synth?.volume ?? -3;
     this.volumeAmount = options?.volumeAmount ?? 8;
     this.effect = new Tone.Vibrato(options.effect).toDestination();
@@ -97,5 +103,18 @@ const soundManager = {
     this.synth.set({
       modulationIndex: newModulationIndex,
     });
+  },
+
+  getWaveformValues: function () {
+    const waveformValues = this.waveform?.getValue() ?? [];
+    for (let i = 0; i < waveformValues.length; i++) {
+      if (this.smoothedWaveformValues[i]) {
+        console.log(this.waveformSmoothness);
+        this.smoothedWaveformValues[i] = p.lerp(waveformValues[i], this.smoothedWaveformValues[i], this.waveformSmoothness);
+      } else {
+        this.smoothedWaveformValues[i] = waveformValues[i];
+      }
+    }
+    return this.smoothedWaveformValues;
   },
 };

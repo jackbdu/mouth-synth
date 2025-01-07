@@ -52,6 +52,7 @@ const videoManager = {
     // todo: this might be intialized in setup so it does not recreate new graphics every frame
     const rows = tempPixelatedGraphics.height;
     const cols = tempPixelatedGraphics.width;
+    const waveformValues = options?.waveformValues ?? [];
     tempPixelatedGraphics.push();
 
     tempPixelatedGraphics.image(sourceImg, 0, 0, tempPixelatedGraphics.width, tempPixelatedGraphics.height, 0, 0, sourceImg.width, sourceImg.height, p.COVER);
@@ -91,7 +92,6 @@ const videoManager = {
         } else if (options.pixelationStyle === 4) {
           // customization
           const numFeaturesMax = options.numFeaturesMax ?? 16;
-          // console.log(options);
           const numVertices = 256;
           const amp = 0.3;
 
@@ -123,6 +123,14 @@ const videoManager = {
           }
           p.endShape();
           p.pop();
+        } else if (options.pixelationStyle === 6) {
+          const minFactorSize = options?.minFactorSize ?? 0.2;
+          const maxFactorSize = options?.maxFactorSize ?? 1;
+          const waveformProgress = p.constrain(index / 4 / cols / rows, 0, 1);
+          const waveformIndex = Math.floor(waveformProgress * waveformValues.length);
+          const factorSize = p.constrain(p.map(waveformValues[waveformIndex], -0.02, 0.02, minFactorSize, maxFactorSize), minFactorSize, maxFactorSize);
+          p.ellipseMode(p.CENTER);
+          p.ellipse(x, y, p.ceil(colWidth * factorSize), p.ceil(rowHeight) * factorSize);
         } else {
           p.rectMode(p.CENTER);
           p.rect(x, y, p.ceil(colWidth), p.ceil(rowHeight));

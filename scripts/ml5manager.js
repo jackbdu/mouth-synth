@@ -116,6 +116,7 @@ const ml5Manager = {
   update: function () {},
 
   display: function (options) {
+    const meter = options?.meter ?? 0;
     const blurriness = options?.blurriness ?? 0;
     for (let face of this.faces) {
       p.push();

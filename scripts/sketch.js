@@ -41,6 +41,10 @@ const sketch = (p) => {
         },
         volume: -16,
       },
+      waveform: {
+        smoothness: 0.5,
+        size: 128,
+      },
     },
     ml5: {
       lipsCloseThreshold: 4,
@@ -54,7 +58,7 @@ const sketch = (p) => {
       },
       strokeWeight: 0.01,
       strokeColor: "#fff",
-      glowingStrokeWeight: 0.02,
+      glowingStrokeWeight: 0.025,
       glowingStrokeColor: "#fff",
       lipsSize: 0.75,
       placeholderFacePath: "assets/neutural-face.json",
@@ -64,11 +68,13 @@ const sketch = (p) => {
       width: 640,
       height: 480,
       pixelationShortSideNum: 24,
-      pixelationStyle: 2,
+      pixelationStyle: 6,
       flipped: true,
       fit: p.COVER,
       backgroundColor: [0],
-      overlayColor: [0, 100],
+      overlayColor: [0, 25],
+      minFactorSize: 0.5,
+      maxFactorSize: 0.9,
     },
     ui: {
       fontUrl: "assets/Ubuntu-Bold.ttf",
@@ -141,7 +147,7 @@ const sketch = (p) => {
   p.draw = () => {
     if (p.beforeDraw) p.beforeDraw();
 
-    p.videoManager.display(p.options.video);
+    p.videoManager.display({ ...p.options.video, waveformValues: p.soundManager.getWaveformValues() });
     p.ml5Manager.display(p.options.ml5);
     p.uiManager.display();
 
