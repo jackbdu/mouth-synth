@@ -61,7 +61,8 @@ const sketch = (p) => {
       glowingStrokeWeight: 0.015,
       glowingStrokeColor: "#fff",
       lipsSize: 0.75,
-      placeholderFacePath: "assets/neutural-face.json",
+      // placeholderFacePath: "assets/neutural-face.json",
+      placeholderFacesPath: "assets/demo-faces.json",
       blurriness: 0.002,
     },
     video: {

@@ -22,10 +22,26 @@ const ml5Manager = {
   lipsCloseThreshold: undefined,
   lipsOpenThreshold: undefined,
   refSize: undefined,
-  placeholderFaces: undefined,
+  // placeholderFaces: undefined,
+  placeholderFaces: {
+    sequence: [],
+    frameCount: 0,
+    framesPerFace: 5,
+    index: 0,
+    getNextFrame: function () {
+      this.frameCount++;
+      this.index = Math.floor(this.frameCount / this.framesPerFace);
+      if (this.index >= Object.keys(this.sequence).length) {
+        this.index = 0;
+        this.frameCount = 0;
+      }
+      return this.sequence[this.index];
+    },
+  },
 
   preload: function (options) {
-    this.placeholderFaces = [p.loadJSON(options.placeholderFacePath)];
+    this.placeholderFaces.sequence = p.loadJSON(options.placeholderFacesPath);
+    // this.placeholderFaces = [p.loadJSON(options.placeholderFacePath)];
   },
 
   setup: function (canvasWidth, canvasHeight, options) {
@@ -66,7 +82,9 @@ const ml5Manager = {
 
   updateFaces: function (faces) {
     if (faces.length < 1) {
-      faces = JSON.parse(JSON.stringify(this.placeholderFaces));
+      const placeholderFaces = this.placeholderFaces.getNextFrame();
+      faces = JSON.parse(JSON.stringify(placeholderFaces));
+      // faces = JSON.parse(JSON.stringify(this.placeholderFaces));
     }
     if (faces.length > 0 && this.faces.length > 0) {
       this.pfaces = this.faces;
