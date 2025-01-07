@@ -49,6 +49,7 @@ const sketch = (p) => {
     ml5: {
       lipsCloseThreshold: 4,
       lipsOpenThreshold: 8,
+      idleVolumeFactor: 0.5,
       smoothness: 0.75,
       // isDebugging: true,
       facemesh: {

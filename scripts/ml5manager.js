@@ -22,6 +22,8 @@ const ml5Manager = {
   lipsCloseThreshold: undefined,
   lipsOpenThreshold: undefined,
   refSize: undefined,
+  placeholderFacesIsActive: undefined,
+  idleVolumeFactor: undefined,
   // placeholderFaces: undefined,
   placeholderFaces: {
     sequence: [],
@@ -48,6 +50,7 @@ const ml5Manager = {
     this.updateRefSize(canvasWidth, canvasHeight);
     this.lipsCloseThreshold = options?.lipsCloseThreshold ?? 8;
     this.lipsOpenThreshold = options?.lipsOpenThreshold ?? 16;
+    this.idleVolumeFactor = options?.idleVolumeFactor ?? 0.5;
     // lips indices without repetition
     this.lipsIndices = [267, 312, 269, 311, 270, 310, 409, 415, 291, 308, 375, 324, 321, 318, 405, 402, 314, 317, 14, 17, 87, 84, 178, 181, 88, 91, 95, 146, 78, 61, 191, 185, 80, 40, 81, 39, 82, 37, 13, 0];
     // lips contour
@@ -82,9 +85,12 @@ const ml5Manager = {
 
   updateFaces: function (faces) {
     if (faces.length < 1) {
+      this.placeholderFacesIsActive = true;
       const placeholderFaces = this.placeholderFaces.getNextFrame();
       faces = JSON.parse(JSON.stringify(placeholderFaces));
       // faces = JSON.parse(JSON.stringify(this.placeholderFaces));
+    } else {
+      this.placeholderFacesIsActive = false;
     }
     if (faces.length > 0 && this.faces.length > 0) {
       this.pfaces = this.faces;
@@ -254,7 +260,8 @@ const ml5Manager = {
   },
 
   getLipsOpeningPercentage: function () {
-    return (this.lipsDistance / this.lipInteriorLength) * 2;
+    const lipsOpeningPercentage = p.constrain((this.lipsDistance / this.lipInteriorLength) * 2, 0, this.placeholderFacesIsActive ? this.idleVolumeFactor : 1);
+    return lipsOpeningPercentage;
   },
 
   getLipsTipHeadingXPercentage: function () {

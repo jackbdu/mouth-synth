@@ -109,7 +109,6 @@ const soundManager = {
     const waveformValues = this.waveform?.getValue() ?? [];
     for (let i = 0; i < waveformValues.length; i++) {
       if (this.smoothedWaveformValues[i]) {
-        console.log(this.waveformSmoothness);
         this.smoothedWaveformValues[i] = p.lerp(waveformValues[i], this.smoothedWaveformValues[i], this.waveformSmoothness);
       } else {
         this.smoothedWaveformValues[i] = waveformValues[i];
