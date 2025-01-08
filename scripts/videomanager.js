@@ -18,7 +18,12 @@ const videoManager = {
   },
 
   update: function (options) {
+    const flipVertical = options?.flipVertical ?? false;
     this.captureGraphics.push();
+    if (flipVertical) {
+      this.captureGraphics.translate(this.captureGraphics.width, this.captureGraphics.height);
+      this.captureGraphics.scale(-1, -1);
+    }
     this.captureGraphics.image(this.capture, 0, 0, this.captureGraphics.width, this.captureGraphics.height, 0, 0, this.capture.width, this.capture.height, options.fit);
     this.captureGraphics.pop();
   },

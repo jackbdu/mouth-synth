@@ -12,6 +12,10 @@ const sketch = (p) => {
   };
 
   p.options = {
+    exhibit: {
+      reloadTotalMillis: 3600000,
+      reloadAbsenceMillis: 10000,
+    },
     sound: {
       midiScale: [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84],
       noteIndices: [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24], // major 2 octaves
@@ -42,7 +46,7 @@ const sketch = (p) => {
         volume: -16,
       },
       waveform: {
-        smoothness: 0.5,
+        smoothness: 0.7,
         size: 128,
       },
     },
@@ -64,17 +68,17 @@ const sketch = (p) => {
       lipsSize: 0.75,
       // placeholderFacePath: "assets/neutural-face.json",
       placeholderFacesPath: "assets/demo-faces.json",
-      blurriness: 0.002,
+      blurriness: 0,
     },
     video: {
-      width: 640,
+      width: 480,
       height: 480,
       pixelationShortSideNum: 24,
       pixelationStyle: 6,
       flipped: true,
       fit: p.COVER,
-      backgroundColor: [0],
-      overlayColor: [0, 50],
+      backgroundColor: "#0000",
+      overlayColor: [0, 100],
       minFactorSize: 0.3,
       maxFactorSize: 0.9,
     },
@@ -85,7 +89,7 @@ const sketch = (p) => {
         welcome: "Click here to activate audio".toUpperCase(),
         running: "",
       },
-      textColor: 255,
+      textColor: "#fff",
       // showFrameRate: true,
     },
   };
@@ -158,6 +162,19 @@ const sketch = (p) => {
 
   p.afterDraw = () => {
     if (p.endCapture) p.endCapture();
+    if (p.specs.exhibit) {
+      const millis = p.millis();
+      if (millis > p.options.exhibit.reloadTotalMillis && !p.ml5Manager.hasDetectedFaces()) {
+        if (!p.absenceMillis) {
+          p.absenceMillis = millis;
+        }
+        if (millis - p.absenceMillis > p.options.exhibit.reloadAbsenceMillis) {
+          window.location.reload();
+        }
+      } else {
+        p.absenceMillis = undefined;
+      }
+    }
   };
 
   p.windowResized = () => {
@@ -190,12 +207,33 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 });
 if (params.width && parseInt(params.width) > 0) p.specs.outputWidth = params.width;
 if (params.height && parseInt(params.height) > 0) p.specs.outputHeight = params.height;
-if (params.exhibit) p.specs.exhibit = params.exhibit === "true";
-
-if (p.specs.exhibit) {
-  p.options.ui.messages = {
-    loading: "",
-    welcome: "",
-    running: "",
-  };
+if (params.flipvertical) {
+  p.options.video.flipVertical = params.flipvertical === "true";
+}
+if (params.exhibit) {
+  p.specs.exhibit = params.exhibit === "true";
+  if (p.specs.exhibit) {
+    p.options.ui.messages = {
+      loading: "",
+      welcome: "",
+      running: "",
+    };
+  }
+}
+if (params.theme) {
+  document.body.classList.add(p.specs.theme);
+  switch (p.specs.theme) {
+    case "light":
+      p.options.ml5.strokeColor = "#000";
+      p.options.ml5.glowingStrokeColor = "#000";
+      p.options.video.overlayColor = [255, 100];
+      p.options.ui.textColor = "#000";
+      break;
+    case "dark":
+      p.options.ml5.strokeColor = "#fff";
+      p.options.ml5.glowingStrokeColor = "#fff";
+      p.options.video.overlayColor = [0, 100];
+      p.options.ui.textColor = "#fff";
+      break;
+  }
 }

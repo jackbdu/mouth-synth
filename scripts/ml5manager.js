@@ -5,6 +5,7 @@ const ml5Manager = {
   faceMesh: undefined,
   faces: undefined,
   pfaces: undefined,
+  detectedFaces: undefined,
   upperLipIndex: undefined,
   lowerLipIndex: undefined,
   lipLeftIndex: undefined,
@@ -62,6 +63,7 @@ const ml5Manager = {
     this.lipRightIndex = 308;
     this.lipInteriorLength = Infinity;
     this.loaded = false;
+    this.detectedFaces = [];
     this.faces = [];
     this.pfaces = [];
     this.lipsDistance = -Infinity;
@@ -84,6 +86,7 @@ const ml5Manager = {
   },
 
   updateFaces: function (faces) {
+    this.detectedFaces = faces;
     if (faces.length < 1) {
       this.placeholderFacesIsActive = true;
       const placeholderFaces = this.placeholderFaces.getNextFrame();
@@ -282,5 +285,9 @@ const ml5Manager = {
 
   lipsMovedWhileOpen: function (event) {
     console.log("lipsMovedWhileOpen");
+  },
+
+  hasDetectedFaces: function () {
+    return this.detectedFaces.length > 0;
   },
 };
