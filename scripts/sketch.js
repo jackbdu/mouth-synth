@@ -221,6 +221,7 @@ if (params.exhibit) {
   }
 }
 if (params.theme) {
+  p.specs.theme = params.theme;
   document.body.classList.add(p.specs.theme);
   switch (p.specs.theme) {
     case "light":
